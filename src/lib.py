@@ -4,8 +4,6 @@ from enum import Enum
 lib_hagstrom = ctypes.cdll.LoadLibrary("./target/release/hagstrom.dll")
 lib_hagstrom.initialize_emulator.argtypes = [ctypes.c_char_p]
 lib_hagstrom.write_message.argtypes = [ctypes.c_char_p, ctypes.c_uint64]
-# lib_hagstrom.write_command.argtypes = [ctypes.pointer, ctypes.c_uint64]
-
  
 class ResponseCode(Enum):
     Ok = 0

@@ -1,4 +1,4 @@
-use hagstrom_km_emulator::{
+use hagstrom_core::{
     action::{KeyCode, MouseAction},
     command,
     error::Result,

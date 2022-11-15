@@ -1,21 +1,16 @@
 [package]
-name = "lib-hagstrom"
+name = "hagstrom_core"
 version = "0.1.0"
 edition = "2021"
 authors = ["xiuxiu62 <jacremer@live.com>"]
 license = "Unlicense"
 
-[workspace]
-members = [
-  "core"
-]
-
 [lib]
-name = "lib_hagstrom"
-crate-type = ["dylib"]
+name = "hagstrom_core"
+path = "src/lib.rs"
 
 [dependencies]
-hagstrom_core = { path = "core" }
 lazy_static = "1.4.0"
-libc = "0.2.132"
 num_enum = "0.5.7"
+serialport = "4.2.0"
+thiserror = "1.0.33"
