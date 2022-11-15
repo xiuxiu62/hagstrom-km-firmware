@@ -5,6 +5,11 @@ edition = "2021"
 authors = ["xiuxiu62 <jacremer@live.com>"]
 license = "Unlicense"
 
+[workspaces]
+members = [
+  "hagstrom-py"
+]
+
 [lib]
 name = "hagstrom_km_emulator"
 path = "src/lib.rs"
