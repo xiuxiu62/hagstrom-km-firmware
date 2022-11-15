@@ -1,10 +1,16 @@
 [package]
-name = "serial-test"
+name = "hagstrom-km-emulator"
 version = "0.1.0"
 edition = "2021"
+authors = ["xiuxiu62 <jacremer@live.com>"]
+license = "Unlicense"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "hagstrom_km_emulator"
+path = "src/lib.rs"
 
 [dependencies]
 lazy_static = "1.4.0"
+num_enum = "0.5.7"
 serialport = "4.2.0"
+thiserror = "1.0.33"
