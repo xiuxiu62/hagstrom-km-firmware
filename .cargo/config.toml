@@ -1,2 +1,6 @@
 [unstable]
 sparse-registry = true
+# statically link the CRT so users don't have to install it
+
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]

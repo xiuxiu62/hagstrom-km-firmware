@@ -1,9 +1,9 @@
 [package]
 name = "lib-hagstrom"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["xiuxiu62 <jacremer@live.com>"]
-license = "Unlicense"
+license = "BSD-3-Clause"
 
 [workspace]
 members = [
@@ -11,7 +11,7 @@ members = [
 ]
 
 [lib]
-name = "lib_hagstrom"
+name = "hagstrom"
 crate-type = ["dylib"]
 
 [dependencies]
@@ -19,3 +19,23 @@ hagstrom_core = { path = "core" }
 lazy_static = "1.4.0"
 libc = "0.2.132"
 num_enum = "0.5.7"
+
+[profile.release]
+opt-level = "s" # Optimize for size
+strip = "debuginfo"
+lto = "thin"
+
+
+# build with `cargo build --profile profiling`
+# to analyze performance with tooling like linux perf
+[profile.profiling]
+inherits = "release"
+strip = false
+debug = true
+
+# build with `cargo build --profile ci`
+# to analyze performance with tooling like linux perf
+[profile.ci]
+inherits = "dev"
+strip = false
+debug = false

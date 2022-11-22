@@ -1,7 +1,7 @@
 import ctypes
 from enum import Enum
 
-lib_hagstrom = ctypes.cdll.LoadLibrary("./target/release/hagstrom.dll")
+lib_hagstrom = ctypes.cdll.LoadLibrary("hagstrom.dll")
 lib_hagstrom.initialize_emulator.argtypes = [ctypes.c_char_p]
 lib_hagstrom.write_message.argtypes = [ctypes.c_char_p, ctypes.c_uint64]
  
