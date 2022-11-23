@@ -1,4 +1,7 @@
-use hagstrom_core::{action::KeyCode, message, Emulator};
+use hagstrom_core::{
+    action::{KeyCode, MouseAction, ScrollDirection, ScrollMagnitude},
+    message, Emulator,
+};
 use lazy_static::lazy_static;
 use num_enum::TryFromPrimitiveError;
 use std::{
@@ -9,6 +12,7 @@ use std::{
 
 lazy_static! {
     static ref SESSION_EMULATOR: Arc<Mutex<Option<Emulator>>> = Arc::new(Mutex::new(None));
+    static ref EMULATORS: Arc<Mutex<Vec<Emulator>>> = Arc::new(Mutex::new(vec![]));
 }
 
 #[repr(C)]
@@ -41,6 +45,28 @@ extern "C" fn initialize_emulator(serial_port: *const i8) -> ResponseCode {
         Err(_) => ResponseCode::DeviceNotFound,
     }
 }
+
+// #[no_mangle]
+// extern "C" fn initialize_emulator(serial_port: *const i8) -> ResponseCode {
+//     let serial_port = unsafe {
+//         match convert_c_str(serial_port) {
+//             Ok(data) => data,
+//             Err(response_code) => return response_code,
+//         }
+//     };
+
+//     match Emulator::new(serial_port) {
+//         Ok(emulator) => match EMULATORS.lock().as_mut() {
+//             Ok(emulators) => {
+//                 emulators.push(emulator);
+
+//                 ResponseCode::Ok
+//             }
+//             Err(_) => ResponseCode::LockPoisoned,
+//         },
+//         Err(_) => ResponseCode::DeviceNotFound,
+//     }
+// }
 
 #[no_mangle]
 extern "C" fn write_message(message: *const i8, sleep_duration: u64) -> ResponseCode {
@@ -97,6 +123,33 @@ extern "C" fn write_command(message: *const i8, sleep_duration: u64) -> Response
         },
         Err(_) => ResponseCode::LockPoisoned,
     }
+}
+
+#[no_mangle]
+extern "C" fn mouse_move(x: u16, y: u16, sleep_duration: u64) -> ResponseCode {
+    println!("Move to: ({x}, {y})");
+
+    ResponseCode::Ok
+    // unimplemented!()
+    //     match SESSION_EMULATOR.lock() {
+    //         Ok(mut emulator) => {
+    //             todo!()
+    //         }
+    //         Err(_) => ResponseCode::LockPoisoned,
+    //     }
+}
+
+#[no_mangle]
+extern "C" fn mouse_click(button: u8, sleep_duration: u64) -> ResponseCode {
+    unimplemented!()
+}
+
+#[no_mangle]
+extern "C" fn mouse_scroll(direction: u8, magnitude: u8, sleep_duration: u64) -> ResponseCode {
+    let direction = match ScrollDirection::try_from(direction) {
+    }
+    let magnitude = ScrollMagnitude::try_from(magnitude);
+    unimplemented!()
 }
 
 unsafe fn convert_c_str<'a>(buffer: *const i8) -> Result<&'a str, ResponseCode> {

@@ -97,7 +97,7 @@ lazy_static! {
 #[repr(u8)]
 #[derive(Hash, PartialEq, Eq, UnsafeFromPrimitive, TryFromPrimitive)]
 pub enum KeyCode {
-    Tilde,
+    Zero,
     One,
     Two,
     Three,
@@ -107,9 +107,6 @@ pub enum KeyCode {
     Seven,
     Eight,
     Nine,
-    Zero,
-    Dash,
-    Equal,
 
     A,
     B,
@@ -138,7 +135,10 @@ pub enum KeyCode {
     Y,
     Z,
 
+    Tilde,
     Space,
+    Dash,
+    Equal,
     LBracket,
     RBracket,
     BackSlash,

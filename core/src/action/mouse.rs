@@ -1,14 +1,16 @@
 // 0x00 [X MS] [X LS] [Y MS] [Y LS] [SCROLL]
 
+use num_enum::TryFromPrimitive;
+
 #[repr(u8)]
-#[derive(PartialEq)]
+#[derive(PartialEq, TryFromPrimitive)]
 pub enum ScrollDirection {
     Up = 0x80,
     Down = 0x00,
 }
 
 #[repr(u8)]
-#[derive(PartialEq)]
+#[derive(PartialEq, TryFromPrimitive)]
 pub enum ScrollMagnitude {
     Seven = 0x70,
     Six = 0x60,
@@ -19,6 +21,8 @@ pub enum ScrollMagnitude {
     One = 0x10,
     Zero = 0x00,
 }
+
+#[repr(C)]
 #[derive(PartialEq)]
 pub enum MouseAction {
     Move(u16, u16),
