@@ -57,6 +57,8 @@ fn create_text(keys: Vec<KeyCode>) -> Vec<u8> {
 
 fn character_packet(char: char) -> Result<Vec<u8>, String> {
     let packet = match char {
+        '`' => key!(KeyCode::Tilde),
+        '~' => shift!(KeyCode::Tilde),
         '1' => key!(KeyCode::One),
         '!' => shift!(KeyCode::One),
         '2' => key!(KeyCode::Two),

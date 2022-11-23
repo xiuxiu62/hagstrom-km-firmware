@@ -14,6 +14,7 @@ macro_rules! key_map {
 lazy_static! {
     // (Press, Release)
     pub(crate) static ref KEY_MAP: HashMap<KeyCode, (u8, u8)> = key_map! {
+        KeyCode::Tilde => (1, 129),
         KeyCode::One => (2, 130),
         KeyCode::Two => (3, 131),
         KeyCode::Three => (4, 132),
@@ -24,6 +25,8 @@ lazy_static! {
         KeyCode::Eight => (9, 137),
         KeyCode::Nine => (10, 138),
         KeyCode::Zero => (11, 139),
+        KeyCode::Dash => (12, 140),
+        KeyCode::Equal => (13, 141),
 
         KeyCode::A => (31, 159),
         KeyCode::B => (50, 178),
@@ -52,10 +55,8 @@ lazy_static! {
         KeyCode::Y => (22, 150),
         KeyCode::Z => (46, 174),
 
-        KeyCode::Tilde => (1, 129),
         KeyCode::Space => (61, 189),
-        KeyCode::Dash => (12, 140),
-        KeyCode::Equal => (13, 141),
+
         KeyCode::LBracket => (27, 155),
         KeyCode::RBracket => (28, 156),
         KeyCode::BackSlash => (29, 157),
@@ -96,7 +97,7 @@ lazy_static! {
 #[repr(u8)]
 #[derive(Hash, PartialEq, Eq, UnsafeFromPrimitive, TryFromPrimitive)]
 pub enum KeyCode {
-    Zero,
+    Tilde,
     One,
     Two,
     Three,
@@ -106,6 +107,9 @@ pub enum KeyCode {
     Seven,
     Eight,
     Nine,
+    Zero,
+    Dash,
+    Equal,
 
     A,
     B,
@@ -134,10 +138,7 @@ pub enum KeyCode {
     Y,
     Z,
 
-    Tilde,
     Space,
-    Dash,
-    Equal,
     LBracket,
     RBracket,
     BackSlash,
