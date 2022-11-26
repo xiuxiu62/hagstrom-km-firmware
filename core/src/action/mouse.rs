@@ -22,6 +22,14 @@ pub enum ScrollMagnitude {
     Zero = 0x00,
 }
 
+#[repr(u8)]
+#[derive(PartialEq, TryFromPrimitive)]
+pub enum MouseButton {
+    Left = 0,
+    Middle = 1,
+    Right = 2,
+}
+
 #[repr(C)]
 #[derive(PartialEq)]
 pub enum MouseAction {
@@ -106,5 +114,15 @@ impl MouseAction {
         let (yms, yls) = split_point(y);
 
         vec![0x00, xms, xls, yms, yls, scroll]
+    }
+}
+
+impl From<MouseButton> for MouseAction {
+    fn from(button: MouseButton) -> Self {
+        match button {
+            MouseButton::Left => Self::LeftClick,
+            MouseButton::Middle => Self::MiddleClick,
+            MouseButton::Right => Self::RightClick,
+        }
     }
 }

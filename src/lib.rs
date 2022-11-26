@@ -1,5 +1,5 @@
 use hagstrom_core::{
-    action::{KeyCode, MouseAction, ScrollDirection, ScrollMagnitude},
+    action::{KeyCode, MouseAction, MouseButton, ScrollDirection, ScrollMagnitude},
     message, Emulator,
 };
 use lazy_static::lazy_static;
@@ -68,7 +68,7 @@ extern "C" fn initialize_emulator(serial_port: *const i8) -> ResponseCode {
 //     }
 // }
 
-fn send_packet<F>(packet_callback: F, sleep_duration: Duration) -> ResponseCode
+fn send_packet<F>(packet_callback: F, sleep_duration: u64) -> ResponseCode
 where
     F: FnOnce() -> Result<Vec<u8>, ResponseCode>,
 {
@@ -85,7 +85,7 @@ where
         Err(response_code) => return response_code,
     };
 
-    match emulator.write(packet, sleep_duration) {
+    match emulator.write(packet, Duration::from_millis(sleep_duration)) {
         Ok(_) => ResponseCode::Ok,
         Err(_) => ResponseCode::DataFormatting,
     }
@@ -133,7 +133,7 @@ extern "C" fn write_command(message: *const i8, sleep_duration: u64) -> Response
                     .chars()
                     .map(|char| KeyCode::try_from(char as u8))
                     .collect::<Result<Vec<KeyCode>, TryFromPrimitiveError<KeyCode>>>()
-                    .map(|keycodes| hagstrom_core::action::key::create_command(keycodes)) else {
+                    .map(hagstrom_core::action::key::create_command) else {
                      return ResponseCode::DataFormatting;
                 };
 
@@ -148,24 +148,23 @@ extern "C" fn write_command(message: *const i8, sleep_duration: u64) -> Response
     }
 }
 
+#[inline]
 #[no_mangle]
 extern "C" fn mouse_move(x: u16, y: u16, sleep_duration: u64) -> ResponseCode {
-    println!("Move to: ({x}, {y})");
-
-    ResponseCode::Ok
-    //     match SESSION_EMULATOR.lock() {
-    //         Ok(mut emulator) => {
-    //             todo!()
-    //         }
-    //         Err(_) => ResponseCode::LockPoisoned,
-    //     }
+    send_packet(|| Ok(MouseAction::Move(x, y).as_packet()), sleep_duration)
 }
 
 #[no_mangle]
 extern "C" fn mouse_click(button: u8, sleep_duration: u64) -> ResponseCode {
-    // let callback = || {
-    // let Ok(button) =
-    // }
+    let callback = || {
+        let Ok(button) = MouseButton::try_from(button) else {
+            return Err(ResponseCode::DataFormatting);
+        };
+
+        Ok(MouseAction::from(button).as_packet())
+    };
+
+    send_packet(callback, sleep_duration)
 }
 
 #[no_mangle]
@@ -182,7 +181,7 @@ extern "C" fn mouse_scroll(direction: u8, magnitude: u8, sleep_duration: u64) ->
         Ok(MouseAction::Scroll(direction, magnitude).as_packet())
     };
 
-    send_packet(callback, Duration::from_millis(sleep_duration))
+    send_packet(callback, sleep_duration)
 }
 
 unsafe fn convert_c_str<'a>(buffer: *const i8) -> Result<&'a str, ResponseCode> {
