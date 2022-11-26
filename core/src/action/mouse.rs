@@ -3,14 +3,14 @@
 use num_enum::TryFromPrimitive;
 
 #[repr(u8)]
-#[derive(PartialEq, TryFromPrimitive)]
+#[derive(PartialEq, Eq, TryFromPrimitive)]
 pub enum ScrollDirection {
     Up = 0x80,
     Down = 0x00,
 }
 
 #[repr(u8)]
-#[derive(PartialEq, TryFromPrimitive)]
+#[derive(PartialEq, Eq, TryFromPrimitive)]
 pub enum ScrollMagnitude {
     Seven = 0x70,
     Six = 0x60,
@@ -23,7 +23,7 @@ pub enum ScrollMagnitude {
 }
 
 #[repr(u8)]
-#[derive(PartialEq, TryFromPrimitive)]
+#[derive(PartialEq, Eq, TryFromPrimitive)]
 pub enum MouseButton {
     Left = 0,
     Middle = 1,
@@ -31,7 +31,7 @@ pub enum MouseButton {
 }
 
 #[repr(C)]
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq)]
 pub enum MouseAction {
     Move(u16, u16),
     LeftClick,

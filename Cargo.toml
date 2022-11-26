@@ -12,6 +12,7 @@ members = [
 
 [lib]
 name = "hagstrom"
+path = "hagstrom/lib.rs"
 crate-type = ["dylib"]
 
 [dependencies]
