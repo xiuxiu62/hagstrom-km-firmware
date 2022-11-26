@@ -4,9 +4,9 @@ from enum import Enum
 hagstrom = ctypes.cdll.LoadLibrary("hagstrom.dll")
 hagstrom.initialize_emulator.argtypes = [ctypes.c_char_p]
 hagstrom.write_message.argtypes = [ctypes.c_char_p, ctypes.c_uint64]
-hagstrom.mouse_move.argtypes = [ctypes.c_uint16, ctypes.c_uint16, ctypes.c_uint64]
-hagstrom.mouse_click.argtypes = [ctypes.c_uint8, ctypes.c_uint64]
-hagstrom.mouse_scroll.argtypes = [ctypes.c_uint8, ctypes.c_uint8, ctypes.c_uint64]
+# hagstrom.mouse_move.argtypes = [ctypes.c_uint16, ctypes.c_uint16, ctypes.c_uint64]
+# hagstrom.mouse_click.argtypes = [ctypes.c_uint8, ctypes.c_uint64]
+# hagstrom.mouse_scroll.argtypes = [ctypes.c_uint8, ctypes.c_uint8, ctypes.c_uint64]
 
 class ResponseCode(Enum):
     Ok = 0
@@ -133,34 +133,34 @@ class Emulator:
         keycodes = (ctypes.c_uint8 * len(bytes))(*bytes) 
         handle_response(hagstrom.write_command(keycodes, timeout))
         
-    def move(x: int, y: int, timeout: int):
-        handle_response(hagstrom.mouse_move(x, y, timeout))
+    # def move(x: int, y: int, timeout: int):
+    #     handle_response(hagstrom.mouse_move(x, y, timeout))
     
-    def click(button: MouseButton, timeout: int):
-        handle_response(hagstrom.mouse_click(button.value, timeout))
+    # def click(button: MouseButton, timeout: int):
+    #     handle_response(hagstrom.mouse_click(button.value, timeout))
     
-    def scroll(direction: ScrollDirection, magnitude: ScrollMagnitude, timeout: int):
-        handle_response(hagstrom.mouse_scroll(direction.value, magnitude.value, timeout))
+    # def scroll(direction: ScrollDirection, magnitude: ScrollMagnitude, timeout: int):
+    #     handle_response(hagstrom.mouse_scroll(direction.value, magnitude.value, timeout))
 
 
-class MouseButton(Enum):
-    Left = 0
-    Middle = 1
-    Right = 2
+# class MouseButton(Enum):
+#     Left = 0
+#     Middle = 1
+#     Right = 2
     
-class ScrollDirection(Enum):
-    Up = hex("0x80")
-    Down = hex("0x00")
+# class ScrollDirection(Enum):
+#     Up = hex("0x80")
+#     Down = hex("0x00")
     
-class ScrollMagnitude(Enum):
-    Seven = hex("0x70")
-    Six = hex("0x60")
-    Five = hex("0x50")
-    Four = hex("0x40")
-    Three = hex("0x30")
-    Two = hex("0x20")
-    One = hex("0x10")
-    Zero = hex("0x00")
+# class ScrollMagnitude(Enum):
+#     Seven = hex("0x70")
+#     Six = hex("0x60")
+#     Five = hex("0x50")
+#     Four = hex("0x40")
+#     Three = hex("0x30")
+#     Two = hex("0x20")
+#     One = hex("0x10")
+#     Zero = hex("0x00")
 
-def hex(value: str) -> int:
-    return int(value, base = 16)
+# def hex(value: str) -> int:
+#     return int(value, base = 16)

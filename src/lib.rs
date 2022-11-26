@@ -68,6 +68,29 @@ extern "C" fn initialize_emulator(serial_port: *const i8) -> ResponseCode {
 //     }
 // }
 
+fn send_packet<F>(packet_callback: F, sleep_duration: Duration) -> ResponseCode
+where
+    F: FnOnce() -> Result<Vec<u8>, ResponseCode>,
+{
+    let Ok(mut emulator_lock) = SESSION_EMULATOR.lock() else {
+        return ResponseCode::LockPoisoned;
+    };
+
+    let Some(emulator) = emulator_lock.as_mut() else {
+        return ResponseCode::Uninitialized;
+    };
+
+    let packet = match packet_callback() {
+        Ok(packet) => packet,
+        Err(response_code) => return response_code,
+    };
+
+    match emulator.write(packet, sleep_duration) {
+        Ok(_) => ResponseCode::Ok,
+        Err(_) => ResponseCode::DataFormatting,
+    }
+}
+
 #[no_mangle]
 extern "C" fn write_message(message: *const i8, sleep_duration: u64) -> ResponseCode {
     match SESSION_EMULATOR.lock() {
@@ -98,21 +121,21 @@ extern "C" fn write_command(message: *const i8, sleep_duration: u64) -> Response
     match SESSION_EMULATOR.lock() {
         Ok(mut emulator) => match emulator.as_mut() {
             Some(emulator) => {
+                let duration = Duration::from_millis(sleep_duration);
                 let data = unsafe {
                     match convert_c_str(message) {
                         Ok(data) => data,
                         Err(response_code) => return response_code,
                     }
                 };
-                let packet = match data
+
+                let Ok(packet) = data
                     .chars()
                     .map(|char| KeyCode::try_from(char as u8))
                     .collect::<Result<Vec<KeyCode>, TryFromPrimitiveError<KeyCode>>>()
-                {
-                    Ok(keycodes) => hagstrom_core::action::key::create_command(keycodes),
-                    Err(_) => return ResponseCode::DataFormatting,
+                    .map(|keycodes| hagstrom_core::action::key::create_command(keycodes)) else {
+                     return ResponseCode::DataFormatting;
                 };
-                let duration = Duration::from_millis(sleep_duration);
 
                 match emulator.write(packet, duration) {
                     Ok(_) => ResponseCode::Ok,
@@ -130,7 +153,6 @@ extern "C" fn mouse_move(x: u16, y: u16, sleep_duration: u64) -> ResponseCode {
     println!("Move to: ({x}, {y})");
 
     ResponseCode::Ok
-    // unimplemented!()
     //     match SESSION_EMULATOR.lock() {
     //         Ok(mut emulator) => {
     //             todo!()
@@ -141,15 +163,26 @@ extern "C" fn mouse_move(x: u16, y: u16, sleep_duration: u64) -> ResponseCode {
 
 #[no_mangle]
 extern "C" fn mouse_click(button: u8, sleep_duration: u64) -> ResponseCode {
-    unimplemented!()
+    // let callback = || {
+    // let Ok(button) =
+    // }
 }
 
 #[no_mangle]
 extern "C" fn mouse_scroll(direction: u8, magnitude: u8, sleep_duration: u64) -> ResponseCode {
-    let direction = match ScrollDirection::try_from(direction) {
-    }
-    let magnitude = ScrollMagnitude::try_from(magnitude);
-    unimplemented!()
+    let callback = || -> Result<Vec<u8>, ResponseCode> {
+        let Ok(direction) = ScrollDirection::try_from(direction) else {
+            return Err(ResponseCode::DataFormatting);
+        };
+
+        let Ok(magnitude) = ScrollMagnitude::try_from(magnitude) else {
+            return Err(ResponseCode::DataFormatting);
+        };
+
+        Ok(MouseAction::Scroll(direction, magnitude).as_packet())
+    };
+
+    send_packet(callback, Duration::from_millis(sleep_duration))
 }
 
 unsafe fn convert_c_str<'a>(buffer: *const i8) -> Result<&'a str, ResponseCode> {
@@ -159,3 +192,11 @@ unsafe fn convert_c_str<'a>(buffer: *const i8) -> Result<&'a str, ResponseCode> 
         Err(_) => Err(ResponseCode::DataFormatting),
     }
 }
+
+// fn emulator_mut<'a>() -> Result<&'a mut Emulator, ResponseCode> {
+//     let Ok(mut emulator_lock) = SESSION_EMULATOR.lock() else {
+//         return Err(ResponseCode::LockPoisoned);
+//     };
+
+//     emulator_lock.as_mut().ok_or(ResponseCode::Uninitialized)
+// }
